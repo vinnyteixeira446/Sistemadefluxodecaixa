@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <title>Fluxo de Caixa - Filtro por Data</title>
+    <style>
+        table { border-collapse: collapse; width: 100%; margin-top: 20px; }
+        th, td { border: 1px solid #ddd; padding: 12px; text-align: left; }
+        th { background-color: #f2f2f2; }
+        .entrada { color: green; font-weight: bold; }
+        .saida { color: red; font-weight: bold; }
+        .filtros { margin-bottom: 20px; }
+        input[type="date"] { margin-right: 10px; padding: 5px; }
+        button { padding: 8px 16px; background: #007bff; color: white; border: none; cursor: pointer; }
+    </style>
+</head>
+<body>
+    <h1>Fluxo de Caixa</h1>
+    
+    <div class="filtros">
+        <label>Data início: <input type="date" id="data-inicio" value="2025-11-01"></label>
+        <label>Data fim: <input type="date" id="data-fim" value="2025-12-31"></label>
+        <button onclick="aplicarFiltro()">Filtrar</button>
+        <button onclick="limparFiltro()">Limpar</button>
+    </div>
+
+    <table id="transacoes-tabela">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Descrição</th>
+                <th>Valor (R$)</th>
+                <th>Data</th>
+            </tr>
+        </thead>
+        <tbody id="tabela-body"></tbody>
+    </table>
+
+    <script>
+        const transacoes = [
+            { id: 1, descricao: "Salário", valor: 5000, data: "2025-11-01" },
+            { id: 2, descricao: "Aluguel", valor: -1200, data: "2025-11-15" },
+            { id: 3, descricao: "Supermercado", valor: -300, data: "2025-11-20" },
+            { id: 4, descricao: "Freelance", valor: 800, data: "2025-12-05" },
+            { id: 5, descricao: "Luz", valor: -150, data: "2025-12-10" }
+        ];
+
+        function filtrarPorData(transacoes, dataInicio, dataFim) {
+            const inicio = new Date(dataInicio);
+            const fim = new Date(dataFim);
+            fim.setHours(23, 59, 59, 999);
+
+            return transacoes.filter(transacao => {
+                const dataTransacao = new Date(transacao.data);
+                return dataTransacao >= inicio && dataTransacao <= fim;
+            });
+        }
+
+        function aplicarFiltro() {
+            const inputInicio = document.getElementById("data-inicio");
+            const inputFim = document.getElementById("data-fim");
+            
+            if (!inputInicio.value || !inputFim.value) {
+                alert("Selecione as datas de início e fim!");
+                return;
+            }
+
+            const filtradas = filtrarPorData(transacoes, inputInicio.value, inputFim.value);
+            atualizarTabela(filtradas);
+        }
+
+        function limparFiltro() {
+            document.getElementById("data-inicio").value = "";
+            document.getElementById("data-fim").value = "";
+            atualizarTabela(transacoes);
+        }
+
+        function atualizarTabela(dados) {
+            const tbody = document.querySelector("#tabela-body");
+            tbody.innerHTML = "";
+
+            dados.forEach(transacao => {
+                const row = tbody.insertRow();
+                row.innerHTML = `
+                    <td>${transacao.id}</td>
+                    <td>${transacao.descricao}</td>
+                    <td class="${transacao.valor >= 0 ? 'entrada' : 'saida'}">
+                        ${transacao.valor.toLocaleString('pt-BR', {style: 'currency', currency: 'BRL'})}
+                    </td>
+                    <td>${new Date(transacao.data).toLocaleDateString('pt-BR')}</td>
+                `;
+            });
+        }
+
+        atualizarTabela(transacoes);
+    </script>
+</body>
+</html>
