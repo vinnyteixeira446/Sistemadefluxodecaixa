@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <title>Fluxo de Caixa Alimentar</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #f7f7f7;
+            margin: 0;
+            padding: 20px;
+        }
+        h1 {
+            text-align: center;
+        }
+        .container {
+            max-width: 700px;
+            margin: auto;
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+        input, select, button {
+            width: 100%;
+            padding: 10px;
+            margin: 8px 0;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+        }
+        button {
+            background: #4CAF50;
+            color: white;
+            cursor: pointer;
+            font-weight: bold;
+        }
+        button:hover {
+            background: #43a047;
+        }
+        table {
+            width: 100%;
+            margin-top: 20px;
+            border-collapse: collapse;
+        }
+        th, td {
+            padding: 10px;
+            border-bottom: 1px solid #ccc;
+            text-align: center;
+        }
+        .resumo {
+            margin-top: 20px;
+            background: #eee;
+            padding: 15px;
+            border-radius: 8px;
+        }
+        .resumo span {
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+
+    <h1>Fluxo de Caixa Alimentar</h1>
+
+    <label>Tipo de Movimento:</label>
+    <select id="tipo">
+        <option value="Entrada">Entrada</option>
+        <option value="Saída">Saída</option>
+    </select>
+
+    <label>Descrição:</label>
+    <input type="text" id="descricao" placeholder="Ex: Venda de marmita, compra de carne...">
+
+    <label>Valor (R$):</label>
+    <input type="number" id="valor" step="0.01" placeholder="0.00">
+
+    <button onclick="adicionar()">Adicionar Movimento</button>
+
+    <table id="tabela">
+        <tr>
+            <th>Tipo</th>
+            <th>Descrição</th>
+            <th>Valor (R$)</th>
+        </tr>
+    </table>
+
+    <div class="resumo">
+        Entradas: R$ <span id="totalEntradas">0.00</span><br>
+        Saídas: R$ <span id="totalSaidas">0.00</span><br>
+        <hr>
+        Saldo Final: R$ <span id="saldo">0.00</span>
+    </div>
+
+</div>
+
+<script>
+    let entradas = 0;
+    let saidas = 0;
+
+    function adicionar() {
+        let tipo = document.getElementById("tipo").value;
+        let descricao = document.getElementById("descricao").value;
+        let valor = parseFloat(document.getElementById("valor").value);
+
+        if (descricao.trim() === "" || isNaN(valor) || valor <= 0) {
+            alert("Preencha a descrição e o valor corretamente!");
+            return;
+        }
+
+        let tabela = document.getElementById("tabela");
+
+        let linha = tabela.insertRow();
+        linha.insertCell(0).innerHTML = tipo;
+        linha.insertCell(1).innerHTML = descricao;
+        linha.insertCell(2).innerHTML = "R$ " + valor.toFixed(2);
+
+        if (tipo === "Entrada") {
+            entradas += valor;
+        } else {
+            saidas += valor;
+        }
+
+        atualizarResumo();
+
+        // Limpar campos
+        document.getElementById("descricao").value = "";
+        document.getElementById("valor").value = "";
+    }
+
+    function atualizarResumo() {
+        document.getElementById("totalEntradas").innerHTML = entradas.toFixed(2);
+        document.getElementById("totalSaidas").innerHTML = saidas.toFixed(2);
+        document.getElementById("saldo").innerHTML = (entradas - saidas).toFixed(2);
+    }
+</script>
+
+</body>
+</html>
